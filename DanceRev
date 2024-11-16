@@ -1,0 +1,73 @@
+public class DanceRevolution {
+
+    public static int minMoves(int n, String[] instructions) {
+        String[] tiles = {"up", "down", "left", "right"};
+        Map<String, Integer> tileIndex = new HashMap<>();
+        for (int i = 0; i < tiles.length; i++) {
+            tileIndex.put(tiles[i], i);
+        }
+
+        int INF = Integer.MAX_VALUE / 2;
+        int[][][] dp = new int[n + 1][4][4];
+
+       
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j < 4; j++) {
+                Arrays.fill(dp[i][j], INF);
+            }
+        }
+
+       
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (i != j) {
+                    dp[0][i][j] = 0;
+                }
+            }
+        }
+
+        for (int step = 1; step <= n; step++) {
+            int currentTile = tileIndex.get(instructions[step - 1]);
+            for (int left = 0; left < 4; left++) {
+                for (int right = 0; right < 4; right++) {
+                    if (left == right) continue;
+
+                   
+                    dp[step][currentTile][right] = Math.min(
+                        dp[step][currentTile][right],
+                        dp[step - 1][left][right] + (left == currentTile ? 0 : 1)
+                    );
+
+                    dp[step][left][currentTile] = Math.min(
+                        dp[step][left][currentTile],
+                        dp[step - 1][left][right] + (right == currentTile ? 0 : 1)
+                    );
+                }
+            }
+        }
+
+       
+        int result = INF;
+        for (int left = 0; left < 4; left++) {
+            for (int right = 0; right < 4; right++) {
+                if (left != right) {
+                    result = Math.min(result, dp[n][left][right]);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static void main(String[] args) {
+       
+        int n1 = 6;
+        String[] instructions1 = {"down", "right", "down", "up", "right", "down"};
+        System.out.println(minMoves(n1, instructions1));
+
+       
+        int n2 = 8;
+        String[] instructions2 = {"up", "right", "down", "up", "up", "down", "right", "left"};
+        System.out.println(minMoves(n2, instructions2)); 
+    }
+}
